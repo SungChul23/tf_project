@@ -5,14 +5,14 @@ terraform {
   required_version = ">=1.10"
   required_providers {
     aws = {
-        source = "hashicrop/aws"
+        source = "hashicorp/aws"
         version = "~>6.0"
     }
 
   }
 }
 provider "aws" {
-  region = "ap-northeast-2"
+  region = var.region
 }
 #공급자 설명, 버전
 #AWS provider 버전 설명, 서울리전 지정
