@@ -22,7 +22,7 @@ data "aws_subnets" "default" {
 
 # 3. 보안그룹 생성 선언 - EC2 진입하는 것에 대한 인-아웃바운드 Port를 설정해서 접근을 제한
 # 생성 = resource
-
+/*
 resource "aws_security_group" "de-ai-22-IaC-sg" {
   name        = "de-ai-22-IaC-sg"
   description = "using_terraform_SG"
@@ -58,4 +58,19 @@ resource "aws_security_group" "de-ai-22-IaC-sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+*/
+
+# AMI 조회 
+data "aws_ami" "get_amazon_linux" {
+    # 최신설정
+    most_recent = true
+
+    # 소유자
+    owners = ["amazon"]
+    
+    filter {
+      name = "name"
+      values = ["al2023-ami-*"]
+    }
 }

@@ -13,5 +13,11 @@ output "get_subnets_id" {
   description = "서울리전의 서브넷 ID"
 }
 
+output "get_amazone_linux_id" {
+    value = data.aws_ami.get_amazon_linux
+    description = "EC2 os 중에서 아마존 리눅스 계열 알아보기"
+}
+
+
 
 # 출력결과 확인 (init -> plan -> apply -> destory)
