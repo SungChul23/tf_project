@@ -18,7 +18,7 @@ variable "is_male" {
 
 variable "skills" {
   # 리스트 타입
-  default = ["java","python"]
+  default = ["java", "python"]
 }
 
 variable "stations" {
@@ -44,4 +44,30 @@ output "skills" {
 }
 output "station" {
   value = var.stations
+}
+
+
+##########################################
+# tfvars 테스트
+##########################################
+
+variable "enviroment" {
+  type        = string
+  default     = "dev"
+  description = "배포환경 (dev -> stage -> prod)"
+}
+
+variable "instance_count" {
+  type        = number
+  default     = 1
+  description = "생성할 EC2 갯수"
+
+}
+
+output "enviroment" {
+  value = var.enviroment
+}
+
+output "instance_count" {
+  value = var.instance_count
 }
