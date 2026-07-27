@@ -71,3 +71,15 @@ output "enviroment" {
 output "instance_count" {
   value = var.instance_count
 }
+
+# locals
+locals {
+  project = "테라폼"
+  env = "pod"
+  name = "${local.project}-${local.env}"
+
+}
+
+output "local_value" {
+  value = local.name
+}
