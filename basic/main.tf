@@ -76,7 +76,7 @@ data "aws_ami" "get_amazon_linux" {
 }
 
 # 4. EC2 생성 선언
-resource "aws_instance" "de-ai-22-IaC" {
+resource "aws_instance" "de-ai-22-IaC-EC2" {
   #AMI
   ami = data.aws_ami.get_amazon_linux.id
 
@@ -101,6 +101,13 @@ resource "aws_instance" "de-ai-22-IaC" {
     Name = "de-ai-22-IaC-EC2"
   }
 
-  # 탄력적 IP 생략
+}
+# 5. 탄력적 IP 선언
+resource "aws_eip" "de-ai-22-IaC-EIP" {
+    # EC2 선언 
+    instance = aws_instance.de-ai-22-IaC-EC2.id
 
+    #네트워크
+    domain = "vpc"
+  
 }

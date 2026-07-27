@@ -23,6 +23,17 @@ output "get_amazone_linux_info" {
     description = "아마존 리눅스 AMI 조회"
 }
 
+#퍼블릭 IP 출력
+output "get_public_IP" {
+    value = aws_instance.de-ai-22-IaC-EC2.public_ip
+}
+
+# EC2 인스턴스 ID 출력
+output "get_EC2_ID" {
+    value = aws_instance.de-ai-22-IaC-EC2.id
+}
+
+
 
 
 # 출력결과 확인 (init -> plan -> apply -> destory)
