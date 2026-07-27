@@ -83,3 +83,35 @@ locals {
 output "local_value" {
   value = local.name
 }
+
+
+# 함수 (다양한 함수 지원)
+output "upper_case" {
+  value = upper(var.name)
+}
+
+
+# for_each
+# 서비스별 인스턴스 유형 정의 리소스 구성 가정
+# web : t3.micro, was:t3.small, db:t3.medium
+locals {
+  servers = {
+    web = "t3.micro"
+    was = "t3.small"
+    db  = "t3.medium"
+  }
+}
+output "for_each_value" {
+  value = local.servers
+}
+
+# resource "temp_spec" "server" {
+#   # 반복적으로 구성될 데이터 세팅 -> 내부적으로 반복
+#   for_each = local.servers
+  
+#   # 내부에서 자동처리 예시
+#   input = {
+#     name = each.key
+#     type = each.value
+#   }
+# }
