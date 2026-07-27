@@ -5,17 +5,57 @@
 # - 현재 리전의 VPC 서비스 중 default 정보 조회 하라 -> data.aws_vpc.default.id 참조
 
 data "aws_vpc" "default" {
-    default = true
-  
+  default = true
+
 }
 
 # 2. 기본 VPC의 서비스 정보 조회 하라 (data)
 # - n개의 서브넷이 존재하므로 이름 values에 담아라
 
 data "aws_subnets" "default" {
-    filter {
-      name = "vpc-id"
-      values = [data.aws_vpc.default.id]
-    }
-    
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+
+}
+
+# 3. 보안그룹 생성 선언 - EC2 진입하는 것에 대한 인-아웃바운드 Port를 설정해서 접근을 제한
+# 생성 = resource
+
+resource "aws_security_group" "de-ai-22-IaC-sg" {
+  name        = "de-ai-22-IaC-sg"
+  description = "using_terraform_SG"
+  # 보안 그룹은 VPC에 종속되어서 구성됨
+  # id - > 리소스명 - 해시값 (중복 x , 고유값)
+
+  # 보안그룹은 VPC 안에서만 존재할 수 있는 리소스
+  vpc_id = data.aws_vpc.default.id
+
+  # 인바운드 : only SSH Traffic
+  ingress {
+    description = "only SSH Traffic"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # 인바운드 : only HTTP Traffic
+  ingress {
+    description = "only HTTP Traffic"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # 아웃바운드 : ALL ALLOW
+  egress {
+    description = "ALL ALLOW"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }

@@ -155,12 +155,48 @@ pem 파일, 스토리지, 리전, 이름 . . .
      - 구성에 필요한 패키지 등 사용 버전 + 리전
 
 - main.tf
-     -구성
+
+     - 구성
           - 통합적으로 구성 (vpc -> 서브넷 -> 보안그룹(동적생성도 가능) -> os 이미지 조회/선택(AmazonLinux2) -> EC2 생성 선언 -> 탄력적 IP 생성 후 연결)
           - 클라우드 내부에 본인만 사용하는 사설네트워크(VPC 관련 전체 리소스) 만 제외하고 전체 구성을 동적으로 생성
+
+     - data, resource등 작성
+          - 리소스 유형(https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+               - AWS VPC -> aws_vpc
+               - '<프로바이더>_<서비스명> OR <프로바이더명>_<서비스명>_<상세리소스>'
+          - TF 내부 고유명 : 커스텀 가능
+
+          ```
+               data|resource "리소스유형(AWS 고정값)" "테라폼 내부 식별자(TF내부 고유명)" {
+                    ...
+               }
+          ```
+
 
      - VPC 조회 하도록 선언
           - VPC는 리전별로 기본이 하나씩 구성되어 있다 (없으면 생성 가능)
                - 현재는 서울리전의 기본 vpc 서브넷 4개, 라우팅 테이블 1 개, 인터넷 게이트웨이 1개 로 구성되어 있음 -> 어떤 서브넷을 사용하던 EC2는 외부에서 접속 가능한 구조임
 
      - 보안 그룹 생성 하도록 선언
+          - 작성 완료 (main.tf 참고)
+          - 실행 테스트
+               ```
+               # 자동 정렬
+               terraform fmt
+
+               # 유효성 검상
+               terraform validate
+               ---
+               Success! The configuration is valid.
+
+               # 플랜 -> 이렇게 만들것이다
+               terraform plan
+
+               # 테라폼 적용
+               terraform apply
+               -> 확인 후 yes
+
+               # 삭제
+               terraform destroy
+
+               ```

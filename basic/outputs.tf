@@ -4,13 +4,13 @@
 # 임시코드 : vpc, 서브넷 출력
 
 output "get_vpc_id" {
-    value = data.aws_vpc.default.id
-    description = "서울리전의 기본 VPC의 id"
+  value       = data.aws_vpc.default.id
+  description = "서울리전의 기본 VPC의 id"
 }
 
 output "get_subnets_id" {
-    value = data.aws_subnets.default.ids
-    description = "서울리전의 서브넷 ID"
+  value       = data.aws_subnets.default.ids
+  description = "서울리전의 서브넷 ID"
 }
 
 
