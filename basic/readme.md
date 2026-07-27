@@ -247,9 +247,9 @@ pem 파일, 스토리지, 리전, 이름, ...
           - output  : 테라폼 수행(생성) 결과 출력
      
 - 명령어
-     terraform fmt       : 코드 자동 정렬
-     terraform validate  : 문법 검사
-     terraform init      : 초기화, 최초 필요한 공간, 실행파일등 세팅
-     terraform plan      : apply 적용에 대한 계획 시뮬레이션 -> 검토 
-     terraform apply     : 리소스 생성
-     terraform destroy   : 리소스 해체
+     - terraform fmt       : 코드 자동 정렬
+     - terraform validate  : 문법 검사
+     - terraform init      : 초기화, 최초 필요한 공간, 실행파일등 세팅
+     - terraform plan      : apply 적용에 대한 계획 시뮬레이션 -> 검토 
+     - terraform apply     : 리소스 생성
+     - terraform destroy   : 리소스 해체
