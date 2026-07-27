@@ -22,7 +22,7 @@ data "aws_subnets" "default" {
 
 # 3. 보안그룹 생성 선언 - EC2 진입하는 것에 대한 인-아웃바운드 Port를 설정해서 접근을 제한
 # 생성 = resource
-/*
+
 resource "aws_security_group" "de-ai-22-IaC-sg" {
   name        = "de-ai-22-IaC-sg"
   description = "using_terraform_SG"
@@ -59,7 +59,7 @@ resource "aws_security_group" "de-ai-22-IaC-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-*/
+
 
 # AMI 조회 
 data "aws_ami" "get_amazon_linux" {
@@ -73,4 +73,34 @@ data "aws_ami" "get_amazon_linux" {
       name = "name"
       values = ["al2023-ami-*"]
     }
+}
+
+# 4. EC2 생성 선언
+resource "aws_instance" "de-ai-22-IaC" {
+  #AMI
+  ami = data.aws_ami.get_amazon_linux.id
+
+  #인스턴스 유형
+  instance_type = var.instance_type
+
+  # Key_name
+  key_name = var.key_name
+
+  # 서브넷
+  subnet_id = data.aws_subnets.default.ids[0]
+
+  # 보안그룹
+  vpc_security_group_ids = [
+    aws_security_group.de-ai-22-IaC-sg.id
+  ]
+
+  # EBS 스토리지 생략
+
+  #테그 지정
+  tags = {
+    Name = "de-ai-22-IaC-EC2"
+  }
+
+  # 탄력적 IP 생략
+
 }

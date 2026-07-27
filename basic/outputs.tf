@@ -14,8 +14,13 @@ output "get_subnets_id" {
 }
 
 output "get_amazone_linux_id" {
-    value = data.aws_ami.get_amazon_linux
+    value = data.aws_ami.get_amazon_linux.id
     description = "EC2 os 중에서 아마존 리눅스 계열 알아보기"
+}
+
+output "get_amazone_linux_info" {
+    value = data.aws_ami.get_amazon_linux
+    description = "아마존 리눅스 AMI 조회"
 }
 
 
