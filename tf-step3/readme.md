@@ -308,7 +308,7 @@ aws_vpc.DE-AI-25-company
     ```
 
 
-# 내일 목표시스템
+# 내일(26.7.28) 목표시스템
 - private 서브넷 구성
 - 3-tier 구성
 - NAT Gateway 배치
