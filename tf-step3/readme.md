@@ -39,7 +39,7 @@
         - s/w 설치를 해야하는 경우, 소스코드 획득 등 내부에서 외부의 자원을 가져올 필요가 있음(pull)
         - 이를 위해서 NAT gateway 가 필요함
 
-## 구성원 1 
+## 구성원 
 ### VPC
     - Default VPC
         - 리전별 n개 구성 (통상 자동으로 만들어져 있음)
@@ -224,3 +224,12 @@ AWS
                        |                                       |
                        +------------------[ 인터넷  ]------------+
 ```
+
+
+# 테라폼을 이용한 Custom VPC 구성, company-vpc
+## VPC 구성
+- ~/tf-step3/vpc.tf 생성
+    - 작성
+    - terraform init
+    - terraform plan
+    - terraform apply
