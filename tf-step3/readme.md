@@ -264,7 +264,8 @@ aws_vpc.DE-AI-25-company
     - 테라폼으로 Custom VPC 사용하는 EC2 구성
     - public subnet에 EC2 배치
     - Security group 회사 VPC 맞게 수정(22, 80)
-    - EIP x
+    - EIP
+    - 구성 완료 => SSH 접속 확인
 
 ### 구성도
 ```
@@ -279,6 +280,116 @@ aws_vpc.DE-AI-25-company
       │  Public Subnet          │
       │   10.0.1.0/24           │
       │        │                │
-      │     EC2 + EIP(x)        │
+      │     EC2 + EIP           │
       └─────────────────────────┘
+```
+### 작업
+- VPC 교체 -> subnet 교체 -> 사용하느곳 모두 교체
+- basic 코드 붙여넣기 -> main.tf, variable.tf, provider.tf, outputs.tf
+- main.tf 에서 vpc, subnet 코드 삭제
+- terraform plan > error > 수정위치가 나옴
+```
+     9:   vpc_id = data.aws_vpc.default.id => aws_vpc.DE-AI-25-company.id
+     72:  subnet_id = data.aws_subnets.default.ids[0] => aws_subnet.public.id
+```
+- 5. Elastic IP 생성 선언 주석 풀어줌
+- outputs.tf에서 EIP의 퍼블릭 IP 출력로 표기
+- terraform apply
+- terraform graph 
+    - 관계도 확인
+    ```
+        digraph G {
+            rankdir = "RL";
+            node [shape = rect, fontname = "sans-serif"];
+            "data.aws_ami.amazon_linux" [label="data.aws_ami.amazon_linux"];
+            "aws_eip.DE-AI-25-IaC-TF-EIP" [label="aws_eip.DE-AI-25-IaC-TF-EIP"];
+            "aws_instance.DE-AI-25-IaC-TF" [label="aws_instance.DE-AI-25-IaC-TF"];
+            ...
+    ```
+
+
+# 내일 목표시스템
+- private 서브넷 구성
+- 3-tier 구성
+- NAT Gateway 배치
+```
+                    Internet
+                        │
+                Internet Gateway
+                        │
+                Public Route Table
+                        │
+      ┌─────────────────┴─────────────────┐
+      │                                   │
+ Public Subnet (10.0.1.0/24)        Private Subnet (10.0.2.0/24)
+      │                                   │
+      │                                   │
+ ┌────────────┐                    ┌────────────┐
+ │ Web EC2    │                    │ DB EC2     │
+ │ nginx      │                    │ mysql      │
+ └────────────┘                    └────────────┘
+                                          │
+                                    ┌────────────┐
+                                    │ WAS EC2    │
+                                    │ FastAPI    │
+                                    └────────────┘
+```
+
+```
+terraform state list
+===
+data.aws_ami.get_amazon_linux
+aws_eip.de-ai-22-IaC-EIP
+aws_instance.de-ai-22-IaC-EC2
+aws_internet_gateway.company
+aws_route_table.public
+aws_route_table_association.public
+aws_security_group.de-ai-22-IaC-sg
+aws_subnet.public
+aws_vpc.de-ai-22-company
+===
+```
+
+
+### 최종 테라폼 리소스 구성표
+
+| 구 분 | 테라폼 리소스 이름 | 역할 및 바인딩 관계 |
+| :--- | :--- | :--- |
+| **Data** | `data.aws_ami.get_amazon_linux` | 최신 Amazon Linux 2023 AMI ID 동적 조회 |
+| **VPC** | `aws_vpc.de-ai-22-company` | 전용 독자망 네트워크 공간 (`10.0.0.0/16`) |
+| **Subnet** | `aws_subnet.public` | VPC 내부의 퍼블릭 구역 (`10.0.1.0/24`) |
+| **IGW** | `aws_internet_gateway.company` | VPC 외부 인터넷 출입용 대문 |
+| **RT** | `aws_route_table.public` | 외부 트래픽(`0.0.0.0/0`)을 IGW로 전달하는 이정표 |
+| **RT Assoc** | `aws_route_table_association.public` | 라우팅 테이블과 퍼블릭 서브넷 바인딩 |
+| **SG** | `aws_security_group.de-ai-22-IaC-sg` | VPC 내부 전용 방화벽 (22/SSH, 80/HTTP 허용) |
+| **EC2** | `aws_instance.de-ai-22-IaC-EC2` | 퍼블릭 서브넷 및 보안그룹에 배치된 웹 서버 |
+| **EIP** | `aws_eip.de-ai-22-IaC-EIP` | EC2에 할당되는 고정 퍼블릭 IP (IGW 의존성 설정) |
+
+```
+terraform graph
+
+digraph G {
+  rankdir = "RL";
+  node [shape = rect, fontname = "sans-serif"];
+  "data.aws_ami.get_amazon_linux" [label="data.aws_ami.get_amazon_linux"];
+  "aws_eip.de-ai-22-IaC-EIP" [label="aws_eip.de-ai-22-IaC-EIP"];
+  "aws_instance.de-ai-22-IaC-EC2" [label="aws_instance.de-ai-22-IaC-EC2"];
+  "aws_internet_gateway.company" [label="aws_internet_gateway.company"];
+  "aws_route_table.public" [label="aws_route_table.public"];
+  "aws_route_table_association.public" [label="aws_route_table_association.public"];
+  "aws_security_group.de-ai-22-IaC-sg" [label="aws_security_group.de-ai-22-IaC-sg"];
+  "aws_subnet.public" [label="aws_subnet.public"];
+  "aws_vpc.de-ai-22-company" [label="aws_vpc.de-ai-22-company"];
+  "aws_eip.de-ai-22-IaC-EIP" -> "aws_instance.de-ai-22-IaC-EC2";
+  "aws_eip.de-ai-22-IaC-EIP" -> "aws_internet_gateway.company";
+  "aws_instance.de-ai-22-IaC-EC2" -> "data.aws_ami.get_amazon_linux";
+  "aws_instance.de-ai-22-IaC-EC2" -> "aws_security_group.de-ai-22-IaC-sg";
+  "aws_instance.de-ai-22-IaC-EC2" -> "aws_subnet.public";
+  "aws_internet_gateway.company" -> "aws_vpc.de-ai-22-company";
+  "aws_route_table.public" -> "aws_internet_gateway.company";
+  "aws_route_table_association.public" -> "aws_route_table.public";
+  "aws_route_table_association.public" -> "aws_subnet.public";
+  "aws_security_group.de-ai-22-IaC-sg" -> "aws_vpc.de-ai-22-company";
+  "aws_subnet.public" -> "aws_vpc.de-ai-22-company";
+}
 ```
