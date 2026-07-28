@@ -80,7 +80,15 @@ resource "aws_instance" "de-ai-22-IaC-EC2" {
     Name = "de-ai-22-IaC-EC2-${count.index}"   # 인스턴스 구분용 인덱스 추가
   }
 
-  count = 2
+    count = 2
+
+    # << - EOF . . EOF : 여러줄 문자열을 한번에 스크립트나 파일로 넘겨주는 형식
+    #!/bin/bash 쉘을 통해서 아래 명령어 실행
+    user_data = <<-EOF
+      #!/bin/bash
+      dnf install -y ec2-instance-connect
+    EOF
+
 }
 
 /*

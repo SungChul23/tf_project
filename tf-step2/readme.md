@@ -17,41 +17,41 @@
         - 리소스간 의존성 계산 (먼저 생성할것 들, 참조할것 들)
         - output은 map으로 관리(키,값)
 
-# 변수
+# 변수(variable)
 - 타입 -> 값의 형태로 결정
-```
-string, number, bool, list, map, object
-```
-- 예제 출력 결과 -> 알파벳순
-```
-age = 100
-books = [
-  "1",
-  "2",
-]
-is_mz = true
-name = "테라폼"
-stations = "테라폼"
-```
+    ```
+    string, number, bool, list, map, object
+    ```
+    - 예제 출력 결과 -> 알파벳순
+    ```
+    age = 100
+    books = [
+    "1",
+    "2",
+    ]
+    is_mz = true
+    name = "테라폼"
+    stations = "테라폼"
+    ```
 - 변수의 의미 (`variable` -> Input Variable vs `locals` (Local Values) )
     - 목적: 재사용되는 값 변수로 정의하여 일괄관리, 외부에서 받아오는 입력값 대응
     - 재사용성(여러 리소스등에서 사용), 동적 설정(외부, `-var 옵션` or  `.tfvars` )
 
 - 외부 입력하여 수정1
-```
-# 생성(수행) 단계에서 매개변수로 전달하여(외부) 변수값 수정
-terraform apply -var="age=99" -var="is_mz=false"
----
-# 코드 변경없이 매개변수로 다른 구성을 생성할수 있음
-age = "99"  <- 수정
-books = [
-  "1",
-  "2",
-]
-is_mz = "false" <- 수정
-name = "테라폼"
-stations = "테라폼"
-```
+    ```
+    # 생성(수행) 단계에서 매개변수로 전달하여(외부) 변수값 수정
+    terraform apply -var="age=99" -var="is_mz=false"
+    ---
+    # 코드 변경없이 매개변수로 다른 구성을 생성할수 있음
+    age = "99"  <- 수정
+    books = [
+    "1",
+    "2",
+    ]
+    is_mz = "false" <- 수정
+    name = "테라폼"
+    stations = "테라폼"
+    ```
 
 - 외부 입력하여 수정2
     - 변수 2개 추가
@@ -69,34 +69,99 @@ stations = "테라폼"
                 # 개발 환경으로 인프라 구성(배포)하시오
                 terraform apply -var-file="dev.tfvars" 
             ```
-        
-    - 적용
 
 # locals
-- 코드 내부에서만 사용하는 상수, 계산값등, 외부에서 수정 X 
-- 테그명, 이름 조합, 계산결과등
+- 코드 내부에서만 사용하는 상수, 계산값등, 외부에서 수정 X
+- 태그명, 이름 조합, 게산결과등
 
 # Function (함수)
 ```
 # 문자열 지원
-upper(), lower(), join(), split() ...
+upper()
+lower()
+join()
+split()
+... (숫자, 컬렉션(list/set/.), 맵)
+```
 
-# for-each (반복)
-- 계획된 여러 타입/변수 등 반복적으로 리소스에 반영하여 구성한다면 유용
+# for_each (반복)
+- 계획된 여러 타입/변수등 반복적으로 리소스에 반영하여 구성한다면 유용
 - 반복 주체 : 리소스
 - 반복 결과 : 리소스 여러개 생성
 ```
+for_each_value = {
+  "db" = "t3.medium"
+  "was" = "t3.small"
+  "web" = "t3.micro"
+}
+```
 
- # count
- - 리소스는 기본 1개 생성 컨셉
- - 속성으로 count를 부여하여 수치를 세팅 -> 수치만큼 생성됨
- ```
-    resource "..." "was"{
-        ...
-        count = 3 # was 용 리소스를 같은 스펙에서 3개 생성함
-        ...
+# count
+- 리소스는 기본 1개 생성 컨셉
+- 속성으로 count를 부여하여 수치를 세팅 => 수치만큼 생성됨
+```
+resource "..." "was"{
+    ...
+    count = 3  # was용 리소스를 같은 스펙에서 3개 생성함
+    ...
+}
+```
+- 실습 basic의 *.tf코드 복사하여 tf-step2로 붙여넣기 
+```
+    # 코드 수정후
+    terraform init
+    terraform apply
+    # 확인
+    terraform destroy
+```
 
+# Dynamic (반복)
+- 중첩 블록을 반복하여 생성하는 문법
+- 대상 : 블록 -> 블록이 n개 생성
+- 사용 : resource 내부
+- ex)
+    - 보안 그룹에서 ingress 여러 포트를 오픈할때 유용
+    - 실제 구성은 web-was-db의 보안그룹을 각각 구성할때 진행
+
+```
+resource "aws_security_group" "DE-AI-25-IaC-TF-GROUP" {
+  ...
+  # 포트만 다르고, 나머지 구성은 동일 => 패턴은 동일하되, 값이 동일/다르거나의 반복
+  ingress {
+    protocol    = "tcp"
+    from_port   = 22
+    to_port     = 22
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ...
+}
+# 다이나믹 적용
+locals = {
+    ports = [22, 443, 80]
+}
+resource "aws_security_group" "DE-AI-22-IaC-TF-GROUP" {
+    dynamic "ingress" {
+        for_each = locals.ports # 3회 반복임을 인지함(선언)
+        content {
+            protocol    = "tcp"         # 고정
+            cidr_blocks = ["0.0.0.0/0"] # 고정
+            # dynamic "ingress" 이렇게 선언 햇으므로 값은 ingress.value로 사용
+            from_port   = ingress.value # for_each에 설정된 값을 순서대로 접근 (22->443->80)
+            to_port     = ingress.value
+            
+        }
     }
-
- ```
- - 실습 basic의 *.tf 코드를 복사하여 tf-step2 에 붙여넣기
+}
+```
