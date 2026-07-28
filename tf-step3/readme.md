@@ -236,5 +236,49 @@ AWS
 
 ## 서브넷 구성 (public)
 - 작성
-- terraform apply
-- terraform state list
+```
+terraform apply
+---
+..
+---
+terraform state list
+---
+aws_subnet.public
+aws_vpc.DE-AI-25-company
+```
+
+## Internet Gateway 
+- 작성
+- 생성
+- 확인
+
+## Route Table
+- Route Table 생성
+
+## Route Table 연결
+- subnet과 igw를 연결
+
+## 실습
+### 목표
+    - basic에서 작성한 ec2 lac 코드를 가져와서, vpc, 서브넷 포지션을 vpc.tf로 만들어진 내용으로 연결
+    - 테라폼으로 Custom VPC 사용하는 EC2 구성
+    - public subnet에 EC2 배치
+    - Security group 회사 VPC 맞게 수정(22, 80)
+    - EIP x
+
+### 구성도
+```
+            Internet
+                │
+            Internet Gateway
+                │
+      ┌─────────────────────────┐
+      │      Company VPC        │
+      │     10.0.0.0/16         │
+      │                         │
+      │  Public Subnet          │
+      │   10.0.1.0/24           │
+      │        │                │
+      │     EC2 + EIP(x)        │
+      └─────────────────────────┘
+```
