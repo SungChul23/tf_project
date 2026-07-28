@@ -151,7 +151,7 @@ resource "aws_security_group" "DE-AI-25-IaC-TF-GROUP" {
 locals = {
     ports = [22, 443, 80]
 }
-resource "aws_security_group" "DE-AI-22-IaC-TF-GROUP" {
+resource "aws_security_group" "de-ai-22-IaC-sg" {
     dynamic "ingress" {
         for_each = locals.ports # 3회 반복임을 인지함(선언)
         content {
