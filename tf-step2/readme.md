@@ -279,3 +279,135 @@ resource "aws_subnet" "public" {
     ```
 
 - 환경별(상태별) 별도 state를 기반으로 소스코드등 관리
+
+#state (리소스 상태 조회)
+- apply 생성 이후 내용에 대한 조회
+
+```
+# 새로 생성된 리소스 목록 출력
+terraform state list
+---
+data.aws_ami.amazon_linux
+data.aws_subnets.default
+data.aws_vpc.default
+aws_instance.DE-AI-25-IaC-TF
+aws_security_group.DE-AI-25-IaC-TF-GROUP
+
+# 상세 조회 (리소스가 만들어진후 확인 가능하다 plan보이는 내용들)
+# terraform state show 리소스
+terraform state show aws_instance.DE-AI-25-IaC-TF
+---
+# aws_instance.DE-AI-25-IaC-TF:
+resource "aws_instance" "DE-AI-25-IaC-TF" {
+    ami                                  = "ami-01e99d46e612f3624"
+    arn                                  = "arn:aws:ec2:ap-northeast-2:827913617635:instance/i-06cca307a4999d54a"
+    associate_public_ip_address          = true
+    availability_zone                    = "ap-northeast-2c"
+    disable_api_stop                     = false  <- 생성 이후 세팅된 값들
+    disable_api_termination              = false
+    ebs_optimized                        = false
+    force_destroy                        = false
+    get_password_data                    = false
+    hibernation                          = false
+    host_id                              = null
+    iam_instance_profile                 = null
+    id                                   = "i-06cca307a4999d54a"
+    instance_initiated_shutdown_behavior = "stop"
+    instance_lifecycle                   = null
+    instance_state                       = "running"
+    instance_type                        = "t3.micro"
+    ipv6_address_count                   = 0
+    ipv6_addresses                       = []
+    key_name                             = "DE-AI-25-TEST"
+    monitoring                           = false
+    outpost_arn                          = null
+    password_data                        = null
+    placement_group                      = null
+    placement_group_id                   = null
+    placement_partition_number           = 0
+    primary_network_interface_id         = "eni-0eff638cd47e73c41"
+    private_dns                          = "ip-172-31-45-87.ap-northeast-2.compute.internal"
+    private_ip                           = "172.31.45.87"
+    public_dns                           = "ec2-13-124-172-214.ap-northeast-2.compute.amazonaws.com"
+    public_ip                            = "13.124.172.214"
+    region                               = "ap-northeast-2"
+    secondary_private_ips                = []
+    security_groups                      = [
+        "terraform-25-sg2",
+    ]
+    source_dest_check                    = true
+    spot_instance_request_id             = null
+    subnet_id                            = "subnet-049c8f72bb109a11e"
+    tags                                 = {
+        "Name" = "DE-AI-25-IaC-TF-EC2"
+    }
+    tags_all                             = {
+        "Name" = "DE-AI-25-IaC-TF-EC2"
+    }
+    tenancy                              = "default"
+    user_data                            = <<-EOT
+        #!/bin/bash
+        dnf install -y ec2-instance-connect
+    EOT
+    user_data_replace_on_change          = false
+    vpc_security_group_ids               = [
+        "sg-0ba323064169e7174",
+    ]
+
+    capacity_reservation_specification {
+        capacity_reservation_preference = "open"
+    }
+
+    cpu_options {
+        amd_sev_snp           = null
+        core_count            = 1
+        nested_virtualization = null
+        threads_per_core      = 2
+    }
+
+    credit_specification {
+        cpu_credits = "unlimited"
+    }
+
+    enclave_options {
+        enabled = false
+    }
+
+    maintenance_options {
+        auto_recovery = "default"
+    }
+
+    metadata_options {
+        http_endpoint               = "enabled"
+        http_protocol_ipv6          = "disabled"
+        http_put_response_hop_limit = 2
+        http_tokens                 = "required"
+        instance_metadata_tags      = "disabled"
+    }
+
+    primary_network_interface {
+        delete_on_termination = true
+        network_interface_id  = "eni-0eff638cd47e73c41"
+    }
+
+    private_dns_name_options {
+        enable_resource_name_dns_a_record    = false
+        enable_resource_name_dns_aaaa_record = false
+        hostname_type                        = "ip-name"
+    }
+
+    root_block_device {
+        delete_on_termination = true
+        device_name           = "/dev/xvda"
+        encrypted             = false
+        iops                  = 3000
+        kms_key_id            = null
+        tags                  = {}
+        tags_all              = {}
+        throughput            = 125
+        volume_id             = "vol-0db3bba5af41cb419"
+        volume_size           = 2
+        volume_type           = "gp3"
+    }
+}
+```
