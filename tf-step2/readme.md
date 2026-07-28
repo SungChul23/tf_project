@@ -220,3 +220,62 @@ resource "aws_subnet" "public" {
                 }
             ...
         ```
+
+# workspace (작업공간)
+- count 폴더(신규 생성) 하위에 상관없는 *.tf 이동 시킴(실습상 격리)
+    - 리소스 생성 코드등 배제하고 작업공간만 확인
+- workspace 목록 조회
+    ```
+        terraform workspace list
+        ---
+        # * : 현재 사용중인(활성화된) workspace 표시
+        # default : 기본으로 만들어지는 workspace임
+        * default
+    ```
+- workspace 생성 (기본, 개발, 테스트, 운영,... : 상태정보)
+    ```        
+        terraform workspace select dev
+        --- 
+        # 없다면
+        Workspace "dev" doesn't exist.
+        You can create this workspace with the "new" subcommand 
+        or include the "-or-create" flag with the "select" subcommand.
+
+        # 생성 -> 활성화(*) 이동
+        terraform workspace new dev
+        ---
+        Created and switched to workspace "dev"!
+        You're now on a new, empty workspace. Workspaces isolate their state,
+        so if you run "terraform plan" Terraform will not see any existing state
+        for this configuration.
+
+        # 조회
+        terraform workspace list
+        ---
+        default
+        * dev
+
+        # 특정 상태 선택 
+        terraform workspace select default
+        ---
+        Switched to workspace "default"
+
+        # 목록
+        terraform workspace list
+        ---
+        * default
+        dev
+
+        # 현재 상태 확인
+        terraform workspace show
+        ---
+        default
+
+        # 삭제 -> list 하면 dev가 않보임
+        terraform workspace delete dev
+        ---
+        Deleted workspace "dev"!
+
+    ```
+
+- 환경별(상태별) 별도 state를 기반으로 소스코드등 관리
