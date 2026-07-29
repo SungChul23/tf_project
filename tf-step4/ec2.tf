@@ -6,12 +6,12 @@ locals {
         sg = aws_security_group.sg["web"].id
     }
 
-    web ={
+    was ={
         subnet = aws_subnet.private.id
         sg = aws_security_group.sg["was"].id
     }
 
-     web ={
+     db ={
         subnet = aws_subnet.private.id
         sg = aws_security_group.sg["db"].id
     }
