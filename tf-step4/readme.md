@@ -80,3 +80,17 @@ L VPC
 
 # VPC Private Subnet 구성
 - 서브넷, 라우트 테이블, 서브넷-라우트테이블 연결
+- VPC > 리소스맵 > private 서브넷 연결 다이어 그램 확인
+
+```
+VPC (10.0.0.0/16) - de-ai-22-company
+│
+├── Public Subnet (10.0.1.0/24)
+│     └── Web EC2 (외부 노출, IGW 경로, EIP 부착)
+│
+└── Private Subnet (10.0.2.0/24)
+      ├── WAS EC2 (내부 전용, web에서만 22/8000 허용)
+      └── DB EC2 (내부 전용, was에서만 3306 허용)
+
+```
+
