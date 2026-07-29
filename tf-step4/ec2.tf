@@ -54,10 +54,36 @@ resource "aws_instance" "server" {
 
 
 # EIP 생성 선언 (단 오직 퍼블릭 즉 WEB EC2 만 사용)
+/*
 resource "aws_eip" "de-ai-22-IaC-EIP" {
     # EC2 선언  - > web 용
     instance = aws_instance.server["web"].id
 
     #네트워크
     domain = "vpc"
+}
+*/
+
+
+# NAT G/W
+resource "aws_eip" "nat" {
+    domain = "vpc"
+    tags = {
+      Name = "de-ai-22-EIP-NAT"
+    }
+  
+}
+resource "aws_nat_gateway" "de-ai-22-IaC-EIP-NAT" {
+    allocation_id = aws_eip.nat.id
+    subnet_id = aws_subnet.public.id # 퍼블릭 서브넷에 배치
+
+    tags = {
+      Name = "de-ai-22-nat-g/w"
+    }
+
+    # 명시적 의존성 -> IGW 선행 생성후 진행
+    depends_on = [ 
+        aws_internet_gateway.company
+     ]
+  
 }

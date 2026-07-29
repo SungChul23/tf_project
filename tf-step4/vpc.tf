@@ -39,7 +39,7 @@ resource "aws_internet_gateway" "company" {
   }
 }
 
-# 라우팅 테이블 생성
+# 라우팅 테이블 생성 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.de-ai-22-company.id
   route {
@@ -74,17 +74,17 @@ resource "aws_subnet" "private" {
   }
   
 }
-# 프라이빗 라우팅 테이블 생성
+
+# 프라이빗 라우팅 테이블 생성 + NAT G/W 연결까지 마무리
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.de-ai-22-company.id
 
-  /*
-  route {
 
+  route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.company.id
+    gateway_id = aws_nat_gateway.de-ai-22-IaC-EIP-NAT.id
   }
-  */
+
 
   tags = {
     Name = "de-ai-22-company-private-rt"

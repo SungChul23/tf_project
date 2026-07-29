@@ -94,3 +94,42 @@ VPC (10.0.0.0/16) - de-ai-22-company
 
 ```
 
+# EC2 구성 - 각각 적절한 서브넷으로 배치 생성
+- ec2.tf
+    - 작성
+    - terraform apply
+    - AWS Console > EC2 > 본인 EC2-..WEB > 연결 > 웹브라우저에서 EC2 인스턴스 연결
+    - xx.pem Web Ec2 서버에 업로드
+    - WEB EC2 터미널
+        ```
+            # 권한 조정
+            $ chmod 400 DE-AI-25-TEST.pem
+
+            # WAS 서버에 SSH로 접속 (WEB-to-WAS)
+            $ ssh -i DE-AI-25-TEST.pem ec2-user@10.0.2.180
+            ---
+            The authenticity of host '10.0.2.180 (10.0.2.180)' can't be established.
+            ED25519 key fingerprint is SHA256:/wqhJhz9FChYYmUTq/jeWthAgosrqUwW/qEgdX6kEW4.
+            This key is not known by any other names
+            Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+            Warning: Permanently added '10.0.2.180' (ED25519) to the list of known hosts.
+            ,     #_
+            ~\_  ####_        Amazon Linux 2023
+            ~~  \_#####\
+            ~~     \###|
+            ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
+            ~~       V~' '->
+                ~~~         /
+                ~~._.   _/
+                    _/ _/
+                _/m/'
+        ```
+    
+# NAT Gateway 구성
+- private subnet에 존재하는 EC2 리소스 내에서 특정 패키지를 어떻게 설치, 업그레이드 가능할까? => NAT Gateway
+- 작업
+    - NAT Gateway 은 public subnet 소속, 기능은 제한적 통신(단방향적, pull만 가능)
+        - EIP 생성 선언
+        - NAT Gateway 생성 선언 (EIP 연결)
+    - private route table에 라우트 설정 NAT Gateway
+        - private route table에 route 기능 설정하여 NAT Gateway와 연결
