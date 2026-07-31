@@ -31,7 +31,7 @@ resource "aws_subnet" "public" {
 
   availability_zone = local.azs[each.key]
 
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = true ## 퍼블릭 IP 할당할것인가 ?
 
   # 태그 지정
   tags = {
@@ -42,11 +42,48 @@ resource "aws_subnet" "public" {
 }
 
 
+# Private App Subnets (WEB, WAS, Internal ALB)
+resource "aws_subnet" "app" {
 
+  for_each = local.app_subnets
 
-# Private Application Subnets - Web, Was, internal ALB
+  vpc_id = aws_vpc.main.id
+
+  cidr_block = each.value ## a,c
+
+  availability_zone = local.azs[each.key]
+
+  map_public_ip_on_launch = false ## 퍼블릭 IP 할당할것인가 ?
+
+  # 태그 지정
+  tags = {
+    Name = "${local.project}-app-private-${upper(each.key)}"
+    # 커스텀 테그
+    Tier = "app"
+  }
+}
 
 # Private Db Subnets - RDS
+resource "aws_subnet" "db" {
+
+  for_each = local.db_subnets
+
+  vpc_id = aws_vpc.main.id
+
+  cidr_block = each.value ## a,c
+
+  availability_zone = local.azs[each.key]
+
+  map_public_ip_on_launch = false ## 퍼블릭 IP 할당할것인가 ?
+
+  # 태그 지정
+  tags = {
+    Name = "${local.project}-db-private-${upper(each.key)}"
+    # 커스텀 테그
+    Tier = "db"
+  }
+}
+
 
 # Public Route Table/association 
 
