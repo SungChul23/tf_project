@@ -132,4 +132,31 @@ resource "aws_nat_gateway" "main" {
   depends_on = [aws_internet_gateway.main]
 }
 
+# 프라이빗 라우팅 테이블 생성 + NAT G/W 연결까지 마무리
+resource "aws_route_table" "app" {
+  for_each = local.azs
+  vpc_id   = aws_vpc.main.id
+
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.main[each.key].id
+  }
+
+
+  tags = {
+    Name = "${local.project}-app-RT-${upper(each.key)}"
+  }
+}
+
+# App Route Table을 App 서브넷에 연결(Association)
+resource "aws_route_table_association" "app" {
+  for_each = aws_subnet.app
+
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.app[each.key].id
+
+}
+
 # Private Db Route Table/association  - RDS
+
