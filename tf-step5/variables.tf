@@ -8,7 +8,7 @@ variable "region" {
 # 테라폼에 사용될 변수 정의
 ##########################################
 
-variable "enviroment" {
+variable "environment" {
   default = "dev"
   description = "구동 환경"
   type = string
