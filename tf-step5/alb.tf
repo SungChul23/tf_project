@@ -1,5 +1,9 @@
-## 사용자 → Public ALB(80) → WEB → Internal ALB(8000) → WAS.
+# 사용자 → Public ALB(80) → WEB → Internal ALB(8000) → WAS.
 
+# 1. 요청이 ALB(건물)의 80번 포트로 도착
+# 2. Listener(안내 데스크)가 "80번이니까 WEB Target Group으로 보내자" 결정
+# 3. Target Group(명단)에서 "지금 살아있는(healthy) 인스턴스" 중 하나를 골라서 실제 전달
+# 4. 그 인스턴스(WEB EC2)가 요청 처리
 
 # ============================================================
 # PUBLIC ALB (사용자 → WEB)
