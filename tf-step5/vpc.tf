@@ -108,7 +108,28 @@ resource "aws_route_table_association" "public" {
 }
 
 # Nate Gateway - eip
+resource "aws_eip" "nat" {
+  for_each = local.azs
+  domain   = "vpc"
+
+  tags = {
+    Name = "${local.project}-nat-eip-${each.key}"
+  }
+}
 
 # Private App Route Table/association  - Web, Was
+resource "aws_nat_gateway" "main" {
+  for_each = local.azs
+
+  allocation_id = aws_eip.nat[each.key].id
+  subnet_id     = aws_subnet.public[each.key].id
+
+  tags = {
+    Name = "${local.project}-NAT-${upper(each.key)}"
+  }
+
+  # IGW가 NAT보다 먼저 생성/연결되어 있어야 한다
+  depends_on = [aws_internet_gateway.main]
+}
 
 # Private Db Route Table/association  - RDS
