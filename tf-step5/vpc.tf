@@ -145,7 +145,7 @@ resource "aws_route_table" "app" {
 
 
   tags = {
-    Name = "${local.project}-app-RT-${upper(each.key)}"
+    Name = "${local.project}-APP-RT-${upper(each.key)}"
   }
 }
 
@@ -159,4 +159,19 @@ resource "aws_route_table_association" "app" {
 }
 
 # Private Db Route Table/association  - RDS
+resource "aws_route_table" "db" {
+  vpc_id = aws_vpc.main.id
+  # route 블록 없음 -VPC 안에서 서로 통신하는 것
+  
+  tags = {
+    Name = "${local.project}-DB-RT" # 
+  }
+}
+
+resource "aws_route_table_association" "db" {
+  for_each = aws_subnet.db
+
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.db.id
+}
 
