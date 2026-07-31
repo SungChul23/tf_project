@@ -1,7 +1,7 @@
 variable "region" {
-  default = "us-east-1"
+  default     = "us-east-1"
   description = "북부-버즈니아 리전"
-  type = string
+  type        = string
 }
 
 ##########################################
@@ -9,43 +9,43 @@ variable "region" {
 ##########################################
 
 variable "environment" {
-  default = "dev"
+  default     = "dev"
   description = "구동 환경"
-  type = string
+  type        = string
 }
 
 variable "instance_type" {
-  default = "t3.micro"
+  default     = "t3.micro"
   description = "web/was에 대한 인스턴스 유형"
-  type = string
+  type        = string
 }
 
 variable "web_desired_capacity" {
-  default = "2"
+  default     = "2"
   description = "WEB ASG 기본 인스턴스 수"
-  type = number
+  type        = number
 }
 
 variable "was_desired_capacity" {
-  default = "2"
+  default     = "2"
   description = "WAS ASG 기본 인스턴스 수"
-  type = number
+  type        = number
 }
 
 variable "db_instance_class" {
-  default = "db.t3.micro"
+  default     = "db.t3.micro"
   description = "rds 인스턴스"
-  type = string
+  type        = string
 }
 
 variable "db_name" {
-  default = "app_db"
+  default     = "app_db"
   description = "초기 생성 db 명"
-  type = string
+  type        = string
 }
 
 variable "db_username" {
-  default = "root"
+  default     = "root"
   description = "관리자명"
-  type = string
+  type        = string
 }
