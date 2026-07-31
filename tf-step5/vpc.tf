@@ -84,8 +84,28 @@ resource "aws_subnet" "db" {
   }
 }
 
+# Route Tables & Associations
+# 라우팅 테이블 생성 
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+  route {
 
-# Public Route Table/association 
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = {
+    Name = "${local.project}-PUBLIC-RT"
+  }
+
+}
+
+# 라우팅 테이블을 서브넷에 바인딩
+resource "aws_route_table_association" "public" {
+  for_each       = aws_subnet.public
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.public.id
+}
 
 # Nate Gateway - eip
 
