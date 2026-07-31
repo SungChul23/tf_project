@@ -1,18 +1,20 @@
+# ============================================================
 # VPC
-
+# ============================================================
 resource "aws_vpc" "main" {
-  # CIDR 규칙 지정 65536개 IP를 구성할수 있다. 10.0.0.0/16
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/16" # 65,536개 IP 대역
   enable_dns_hostnames = true
   enable_dns_support   = true
+
   tags = {
     Name = "${local.project}-VPC"
   }
 }
 
-# Internet Gateway
+# ============================================================
+# INTERNET GATEWAY (VPC 전체의 인터넷 관문, VPC당 1개)
+# ============================================================
 resource "aws_internet_gateway" "main" {
-
   vpc_id = aws_vpc.main.id
 
   tags = {
@@ -20,104 +22,70 @@ resource "aws_internet_gateway" "main" {
   }
 }
 
-# Public Subnets (Public ALB, NAT GW)
-resource "aws_subnet" "public" {
+# ============================================================
+# SUBNETS
+# ============================================================
 
+# Public Subnet — Public ALB, NAT Gateway 위치
+resource "aws_subnet" "public" {
   for_each = local.public_subnets
 
-  vpc_id = aws_vpc.main.id
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = each.value
+  availability_zone       = local.azs[each.key]
+  map_public_ip_on_launch = true # 퍼블릭 IP 자동 할당
 
-  cidr_block = each.value ## a,c
-
-  availability_zone = local.azs[each.key]
-
-  map_public_ip_on_launch = true ## 퍼블릭 IP 할당할것인가 ?
-
-  # 태그 지정
   tags = {
-    Name = "${local.project}-public-subnet-${upper(each.key)}"
-    # 커스텀 테그
-    Tier = "public"
+    Name = "${local.project}-PUBLIC-SUBNET-${upper(each.key)}"
+    Tier = "PUBLIC"
   }
 }
 
-
-# Private App Subnets (WEB, WAS, Internal ALB)
+# Private App Subnet — WEB, WAS, Internal ALB 위치
 resource "aws_subnet" "app" {
-
   for_each = local.app_subnets
 
-  vpc_id = aws_vpc.main.id
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = each.value
+  availability_zone       = local.azs[each.key]
+  map_public_ip_on_launch = false
 
-  cidr_block = each.value ## a,c
-
-  availability_zone = local.azs[each.key]
-
-  map_public_ip_on_launch = false ## 퍼블릭 IP 할당할것인가 ?
-
-  # 태그 지정
   tags = {
-    Name = "${local.project}-app-private-${upper(each.key)}"
-    # 커스텀 테그
-    Tier = "app"
+    Name = "${local.project}-APP-PRIVATE-${upper(each.key)}"
+    Tier = "APP"
   }
 }
 
-# Private Db Subnets - RDS
+# Private DB Subnet — RDS 위치
 resource "aws_subnet" "db" {
-
   for_each = local.db_subnets
 
-  vpc_id = aws_vpc.main.id
-
-  cidr_block = each.value ## a,c
-
-  availability_zone = local.azs[each.key]
-
-  map_public_ip_on_launch = false ## 퍼블릭 IP 할당할것인가 ?
-
-  # 태그 지정
-  tags = {
-    Name = "${local.project}-db-private-${upper(each.key)}"
-    # 커스텀 테그
-    Tier = "db"
-  }
-}
-
-# Route Tables & Associations
-# 라우팅 테이블 생성 
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
-  route {
-
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id
-  }
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = each.value
+  availability_zone       = local.azs[each.key]
+  map_public_ip_on_launch = false
 
   tags = {
-    Name = "${local.project}-PUBLIC-RT"
+    Name = "${local.project}-DB-PRIVATE-${upper(each.key)}"
+    Tier = "DB"
   }
-
 }
 
-# 라우팅 테이블을 서브넷에 바인딩
-resource "aws_route_table_association" "public" {
-  for_each       = aws_subnet.public
-  subnet_id      = each.value.id
-  route_table_id = aws_route_table.public.id
-}
+# ============================================================
+# NAT GATEWAY (Private 서브넷의 아웃바운드 트래픽 중계)
+# ============================================================
 
-# Nate Gateway - eip
+# EIP — NAT Gateway 전용 고정 퍼블릭 IP, AZ별로 1개씩
 resource "aws_eip" "nat" {
   for_each = local.azs
   domain   = "vpc"
 
   tags = {
-    Name = "${local.project}-nat-eip-${each.key}"
+    Name = "${local.project}-NAT-EIP-${upper(each.key)}"
   }
 }
 
-# Private App Route Table/association  - Web, Was
+# NAT Gateway — Public 서브넷에 위치, Private 서브넷의 아웃바운드 트래픽 처리
 resource "aws_nat_gateway" "main" {
   for_each = local.azs
 
@@ -128,43 +96,66 @@ resource "aws_nat_gateway" "main" {
     Name = "${local.project}-NAT-${upper(each.key)}"
   }
 
-  # IGW가 NAT보다 먼저 생성/연결되어 있어야 한다
+  # IGW가 먼저 VPC에 연결되어 있어야 NAT Gateway가 정상 동작
   depends_on = [aws_internet_gateway.main]
 }
 
-# 프라이빗 라우팅 테이블 생성 + NAT G/W 연결까지 마무리
+# ============================================================
+# ROUTE TABLES & ASSOCIATIONS
+# ============================================================
+
+# --- PUBLIC ---
+# Public Route Table — 외부 트래픽은 IGW로
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = {
+    Name = "${local.project}-PUBLIC-RT"
+  }
+}
+
+resource "aws_route_table_association" "public" {
+  for_each = aws_subnet.public
+
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.public.id
+}
+
+# --- PRIVATE APP (WEB, WAS) ---
+# App Route Table — 외부 트래픽은 같은 AZ의 NAT Gateway로 (AZ별 분리 = 장애 격리, HA 목적)
 resource "aws_route_table" "app" {
   for_each = local.azs
   vpc_id   = aws_vpc.main.id
 
-
   route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.main[each.key].id
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.main[each.key].id
   }
-
 
   tags = {
     Name = "${local.project}-APP-RT-${upper(each.key)}"
   }
 }
 
-# App Route Table을 App 서브넷에 연결(Association)
 resource "aws_route_table_association" "app" {
   for_each = aws_subnet.app
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.app[each.key].id
-
 }
 
-# Private Db Route Table/association  - RDS
+# --- PRIVATE DB (RDS) ---
+# DB Route Table — 외부 아웃바운드 라우팅 없음 (VPC 내부 local 통신만 허용, 보안 격리 목적)
 resource "aws_route_table" "db" {
   vpc_id = aws_vpc.main.id
-  # route 블록 없음 -VPC 안에서 서로 통신하는 것
-  
+
   tags = {
-    Name = "${local.project}-DB-RT" # 
+    Name = "${local.project}-DB-RT"
   }
 }
 
@@ -174,4 +165,3 @@ resource "aws_route_table_association" "db" {
   subnet_id      = each.value.id
   route_table_id = aws_route_table.db.id
 }
-
