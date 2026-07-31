@@ -13,7 +13,15 @@ terraform {
 }
 provider "aws" {
   region = var.region
+
+  # 기본테그
+  default_tags {
+    tags = local.common_tag
+  }
+
 }
+
+
 #공급자 설명, 버전
 #AWS provider 버전 설명, 서울리전 지정
 #변수가 없으므로 한시적 하드코딩 allow
