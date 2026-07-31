@@ -95,13 +95,13 @@ DB-Private-A                   DB-Private-C
 
 # 파일구조
 tf-step5/
-L variables.tf : tf 전체에 사용한 값 정의 (상수같이 활용)
-L locals.tf    : 신규, 반복용 값 세팅
-L iam.tf       : 신규, SSM 처리 역활, 프로파일 구성, 접속관련
-L provider.tf  : 공급자 정보, 리전, 공용 태그(전체 리소스 영향)
+L [*]variables.tf : tf 전체에 사용한 값 정의 (상수같이 활용)
+L [*]locals.tf    : 신규, 반복용 값 세팅
+L [*]iam.tf       : 신규, SSM 처리 역활, 프로파일 구성, 접속관련
+L [*]provider.tf  : 공급자 정보, 리전, 공용 태그(전체 리소스 영향)
 
-L vpc.tf       : vpc, subnet, igw, nat gateway, route table/az 연결/alb, web/was, db 연결 
-L sg.tf        : 보안 그룹 -> ALB, WEB, Interal ALB, WAS, DB
+L [*]vpc.tf       : vpc, subnet, igw, nat gateway, route table/az 연결/alb, web/was, db 연결 
+L sg.tf        : 수정 보안 그룹 -> ALB, WEB, Interal ALB, WAS, DB
 L alb.tf       : 신규 로그밸런서 구성, 작동방식
 L asg.tf       : 신규 오토 스케일링 그룹 전략, 장애 발생시 대응, 내용 업그레이드시 교체 전략, 증감 조건 (CPU 50% 기준(예시)) 정책
 
@@ -111,12 +111,13 @@ L rds.tf       : 신규 rds 구성
 L userdata-web.sh.tftpl : 테라폼 템플릿 파일, web ec2 구성시 초기해 세팅해야할 내용 쉘스크립트 구성등 내용 포함
 L userdata-was.sh.tftpl : 테라폼 템플릿 파일, was ec2 구성시 초기해 세팅해야할 내용 쉘스크립트 구성등 내용 포함
 
-# SSM 관리 (AWS System Manager)
-- 별도의 pem 파일 없이 접속 가능함
-- EC2 접속하는것만 목표
+
+# SSM 관리 (AWS Systems Manager)
+- 별도의 Pem 파일 없이 접속 가능함
+- EC2에 접속하는것만 목표
 - 절차
-    - 관련 정책 정의
-    - IAM Role 생성 (역할)
-    - AWS 관리형 정책
-    - EC2에 적용 (단, 생성되는 EC2 에서는 SSM Agent 가 설치되어야함 - 최신형은 설치되어 있음)
-    
+    - 1. 관련 정책 정의
+    - 2. IAM Role 생성(역활)
+    - 3. AWS 관리형 정책 연결
+    - 4. EC2에 적용하는 IAM 인스턴스 프로필 생성
+    - 단, 생성되는 EC2에는 SSM Agent가 설치되어 있어야함 (최신형을 통상 설치되어 있음)
