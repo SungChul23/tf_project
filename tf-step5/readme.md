@@ -110,3 +110,13 @@ L launch_template.tf : 신규
 L rds.tf       : 신규 rds 구성
 L userdata-web.sh.tftpl : 테라폼 템플릿 파일, web ec2 구성시 초기해 세팅해야할 내용 쉘스크립트 구성등 내용 포함
 L userdata-was.sh.tftpl : 테라폼 템플릿 파일, was ec2 구성시 초기해 세팅해야할 내용 쉘스크립트 구성등 내용 포함
+
+# SSM 관리 (AWS System Manager)
+- 별도의 pem 파일 없이 접속 가능함
+- EC2 접속하는것만 목표
+- 절차
+    - 관련 정책 정의
+    - IAM Role 생성 (역할)
+    - AWS 관리형 정책
+    - EC2에 적용 (단, 생성되는 EC2 에서는 SSM Agent 가 설치되어야함 - 최신형은 설치되어 있음)
+    
