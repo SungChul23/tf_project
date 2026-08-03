@@ -116,10 +116,10 @@
 
 # 구조 설계
 ## ~/infra 내 테라폼 파일
-1. `01_versions.tf` — Terraform/AWS Provider 버전
-2. `02_variables.tf` — 외부 입력값
-3. `03_locals.tf` — 입력값을 조합한 공통 이름·서브넷 Map·태그
-4. `04_provider.tf` — AWS 리전과 공통 태그
+1. ✅`01_versions.tf` — Terraform/AWS Provider 버전
+2. ✅`02_variables.tf` — 외부 입력값
+3. ✅`03_locals.tf` — 입력값을 조합한 공통 이름·서브넷 Map·태그
+4. ✅`04_provider.tf` — AWS 리전과 공통 태그
 
 ```
 # 중간 점검
@@ -135,8 +135,12 @@
 ~/tf-step6> terraform -chdir="./infra"  apply
 ```
 
-5. `05_vpc.tf` — VPC, 6개 Subnet, IGW, NAT Gateway, Route Table
-6. `06_iam.tf` — EKS Cluster Role과 Auto Mode Node Role
+5. ✅`05_vpc.tf` — VPC, 6개 Subnet, IGW, NAT Gateway, Route Table
+6. ✅`06_iam.tf` — EKS Cluster Role과 Auto Mode Node Role
+
+```
+- 삭제시 해당 role이 삭제 되지않는다면, 자동화 구성시 오류 발생
+```
 7. `07_logging.tf` — EKS Control Plane CloudWatch Log Group
 
 8. `08_eks.tf` — EKS Control Plane, Auto Mode, Metrics Server, Access Entry
