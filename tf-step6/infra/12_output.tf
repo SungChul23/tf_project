@@ -17,8 +17,3 @@ output "cluster_name" {
 # [네트워크] VPC, 서브넷(2개), AZ, CIDR  - 아웃풋
 ##########################################
 
-output "public_subnet"{
-    # 임시
-    value = local.public_subnet_cidrs
-    description = "퍼블릭 서브넷 CIDR 블록"
-}

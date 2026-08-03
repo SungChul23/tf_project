@@ -9,7 +9,7 @@ locals {
   # Multi-AZ를 위한 가용 영역 리스트
   az_keys = ["a", "c"]
 
-  public_subnet_cidrs = {
+  public_subnet = {
     for index, key in local.az_keys : key => {
       az   = var.availability_zones[index]
       cidr = var.public_subnet_cidrs[index]
