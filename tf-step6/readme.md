@@ -141,7 +141,7 @@
 ```
 - 삭제시 해당 role이 삭제 되지않는다면, 자동화 구성시 오류 발생
 ```
-7. `07_logging.tf` — EKS Control Plane CloudWatch Log Group
+7. `✅07_logging.tf` — EKS Control Plane CloudWatch Log Group
 
 8. `08_eks.tf` — EKS Control Plane, Auto Mode, Metrics Server, Access Entry
 9. `09_security.tf` — EKS Cluster Security Group에서 RDS 3306 접근 허용
