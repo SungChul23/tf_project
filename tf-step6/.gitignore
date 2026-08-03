@@ -1,0 +1,7 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+*.tfvars       # 민감한 변수값이 들어있다면 (선택사항, 팀 컨벤션에 따라 다름)
+crash.log
