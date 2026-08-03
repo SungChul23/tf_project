@@ -61,6 +61,7 @@ variable "availability_zones" {
 ##########################################
 # EKS 설정 관련 변수
 ##########################################
+
 variable "kubernetes_version" {
   default     = "1.35"
   description = "EKS 클러스터에 사용할 쿠버네티스 버전"
@@ -78,40 +79,20 @@ variable "additional_admin_role_arns" {
   type        = set(string)
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-variable "instance_type" {
-  default     = "t3.micro"
-  description = "web/was에 대한 인스턴스 유형"
-  type        = string
-}
-
-variable "web_desired_capacity" {
-  default     = "2"
-  description = "WEB ASG 기본 인스턴스 수"
-  type        = number
-}
-
-variable "was_desired_capacity" {
-  default     = "2"
-  description = "WAS ASG 기본 인스턴스 수"
-  type        = number
-}
+##########################################
+# RDS 설정
+##########################################
 
 variable "db_instance_class" {
   default     = "db.t3.micro"
-  description = "rds 인스턴스"
+  description = "RDS 인스턴스 클래스"
   type        = string
+}
+
+variable "db_allocated_storage" {
+  default     = 20
+  description = "RDS 인스턴스에 할당할 저장소 크기 (GB)"
+  type        = number
 }
 
 variable "db_name" {
@@ -121,7 +102,7 @@ variable "db_name" {
 }
 
 variable "db_username" {
-  default     = "root"
+  default     = "admin"
   description = "관리자명"
   type        = string
 }
