@@ -121,6 +121,20 @@
 3. `03_locals.tf` — 입력값을 조합한 공통 이름·서브넷 Map·태그
 4. `04_provider.tf` — AWS 리전과 공통 태그
 
+```
+# 중간 점검
+# -chdir="tf가 존재하는 경로" => 해당 위치에 tf에 대해 작업 진행
+~/tf-step6> terraform -chdir="./infra"  init
+# 포멧
+~/tf-step6> terraform -chdir="./infra"  fmt
+# 검사
+~/tf-step6> terraform -chdir="./infra"  validate
+# 플랜
+~/tf-step6> terraform -chdir="./infra"  plan
+# 적용 -> output을 구성하여 결과 확인
+~/tf-step6> terraform -chdir="./infra"  apply
+```
+
 5. `05_vpc.tf` — VPC, 6개 Subnet, IGW, NAT Gateway, Route Table
 6. `06_iam.tf` — EKS Cluster Role과 Auto Mode Node Role
 7. `07_logging.tf` — EKS Control Plane CloudWatch Log Group

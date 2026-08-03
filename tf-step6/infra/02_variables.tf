@@ -31,19 +31,19 @@ variable "vpc_cidr" {
 }
 
 variable "public_subnet_cidrs" {
-  default     = ["10.0.1.0/24","10.0.2.0/24"]
+  default     = ["10.0.1.0/24", "10.0.2.0/24"]
   description = "퍼블릭 서브넷 CIDR 블록"
   type        = list(string)
 }
 
 variable "app_subnet_cidrs" {
-  default     = ["10.0.11.0/24","10.0.12.0/24"]
+  default     = ["10.0.11.0/24", "10.0.12.0/24"]
   description = "EKS Auto Mode Node/Pod 용 프라이빗 서브넷 CIDR 블록"
   type        = list(string)
 }
 
 variable "db_subnet_cidrs" {
-  default     = ["10.0.21.0/24","10.0.22.0/24"]
+  default     = ["10.0.21.0/24", "10.0.22.0/24"]
   description = "RDS 용 프라이빗 서브넷 CIDR 블록"
   type        = list(string)
 }
