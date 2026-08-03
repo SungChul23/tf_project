@@ -10,4 +10,48 @@
 - 클러스터 단위로 작동
     - 구성
         - 전체 클러스터의 두뇌 역할 구동 : 컨트롤 플랜 (마스터 노드) -> auto mode시 자동 구성
-        - 실제 컨테이너 어플리케이션 구동 : 워커 노드 <- auto mode 구성시 집중 파트
+        - 실제 컨테이너 어플리케이션 구동 : 데이터 플랜 (워커 노드) <- auto mode 구성시 집중 파트
+
+# 쿠버네티스 구조
+- 쿠버네티스 중심 기반 구성
+
+![쿠버네티스 중심 기반 구성](k8s_image_2.png)
+
+
+- AWS EKS 기반 구성
+
+![쿠버네티스 중심 기반 구성](k8s_image_1.png)
+
+- 트래픽 흐름도
+```
+                         Internet
+                            │
+                            ▼
+                 AWS Application Load Balancer
+                            │
+                      Kubernetes Ingress
+                            │
+                            ▼
+                    WEB Service(ClusterIP)
+                            │
+                ┌───────────┴───────────┐
+                ▼                       ▼
+          WEB Pod 1                 WEB Pod 2
+        Nginx Container           Nginx Container
+                │
+                └───────────┬───────────┘
+                            │
+                            ▼
+                    WAS Service(ClusterIP)
+                            │
+                ┌───────────┴───────────┐
+                ▼                       ▼
+          WAS Pod 1                 WAS Pod 2
+        FastAPI Container         FastAPI Container
+                │                       │
+                └───────────┬───────────┘
+                            │
+                            ▼
+                     Amazon RDS MySQL
+                      Multi-AZ 구성
+```
