@@ -112,3 +112,39 @@
 | 선언형 관리 | 서버에 접속해 직접 수정하지 않고 YAML과 Terraform으로 원하는 상태를 정의 |
 | CI/CD 연계 | GitHub Actions, ECR, ArgoCD와 연결해 이미지 빌드부터 배포까지 자동화 |
 | 서비스 확장 대응 | WEB·WAS 외에 배치, 데이터 처리, 모니터링 등 서비스가 늘어도 동일한 방식으로 관리 |
+
+
+# 구조 설계
+## ~/infra 내 테라폼 파일
+1. `01_versions.tf` — Terraform/AWS Provider 버전
+2. `02_variables.tf` — 외부 입력값
+3. `03_locals.tf` — 입력값을 조합한 공통 이름·서브넷 Map·태그
+4. `04_provider.tf` — AWS 리전과 공통 태그
+
+5. `05_vpc.tf` — VPC, 6개 Subnet, IGW, NAT Gateway, Route Table
+6. `06_iam.tf` — EKS Cluster Role과 Auto Mode Node Role
+7. `07_logging.tf` — EKS Control Plane CloudWatch Log Group
+
+8. `08_eks.tf` — EKS Control Plane, Auto Mode, Metrics Server, Access Entry
+9. `09_security.tf` — EKS Cluster Security Group에서 RDS 3306 접근 허용
+10. `10_ecr.tf` — WEB/WAS 이미지 저장소와 이미지 정리 정책 (CI/CD)
+11. `11_rds.tf` — 비공개 MySQL Multi-AZ 및 Secrets Manager 암호
+
+12. `12_outputs.tf` — 배포 스크립트가 사용할 생성 결과
+
+
+## ~/k8s 쿠버네티스 구성 파일
+- app.yaml.tpl
+    - 인프라 구성후 참조할 리소스값등을 구성 파일에 전달하기 위해 템플릿 형태로 구성
+    - ${변수명} 주요 표현 곳곳에 
+
+## ~/apps web , was 이미지 생성, 소스코드, Dockerfile
+- web
+    - Dockerfile : 이미지 생성용 도커파일
+    - index.html : 홈페이지 (/) 프런트 로직 (html,css,js)
+    - nginx.conf : 프록시 구성 환경설정 파일 (web->was, 기타설정 ...)
+- was
+    - app.py : fastAPI 작성된 벡엔드 코드
+    - Dokkerfi;e : 이미지 생서용 도커파일
+    - requirements.txt : 필수 패키지
+
