@@ -4,7 +4,7 @@
 
 locals {
   # 프로젝트명 
-  project = "de-ai-22-IaC-3tier-v1"
+  project = "de-ai-22-3t-v1"
 
   # 리소스에 적용된 공용 테그
   common_tag = {

@@ -20,7 +20,7 @@ resource "aws_security_group" "public_alb" {
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"             # 모든 프로토콜/포트 허용 (ALB → WEB 등 뒷단으로 전달)
+    protocol    = "-1" # 모든 프로토콜/포트 허용 (ALB → WEB 등 뒷단으로 전달)
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -43,14 +43,14 @@ resource "aws_security_group" "web" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    security_groups = [aws_security_group.public_alb.id]   # Public ALB SG를 단 리소스만 허용
+    security_groups = [aws_security_group.public_alb.id] # Public ALB SG를 단 리소스만 허용
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]   # WEB → Internal ALB, 그리고 NAT 경유 외부 통신(업데이트 등)
+    cidr_blocks = ["0.0.0.0/0"] # WEB → Internal ALB, 그리고 NAT 경유 외부 통신(업데이트 등)
   }
 
   tags = { Name = "${local.project}-WEB-SG" }
@@ -72,14 +72,14 @@ resource "aws_security_group" "internal_alb" {
     from_port       = 8000
     to_port         = 8000
     protocol        = "tcp"
-    security_groups = [aws_security_group.web.id]   # WEB SG를 단 리소스만 허용
+    security_groups = [aws_security_group.web.id] # WEB SG를 단 리소스만 허용
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]   # Internal ALB → WAS로 전달
+    cidr_blocks = ["0.0.0.0/0"] # Internal ALB → WAS로 전달
   }
 
   tags = { Name = "${local.project}-INTERNAL-ALB-SG" }
@@ -100,14 +100,14 @@ resource "aws_security_group" "was" {
     from_port       = 8000
     to_port         = 8000
     protocol        = "tcp"
-    security_groups = [aws_security_group.internal_alb.id]   # Internal ALB SG를 단 리소스만 허용
+    security_groups = [aws_security_group.internal_alb.id] # Internal ALB SG를 단 리소스만 허용
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]   # WAS → RDS, 그리고 NAT 경유 외부 통신(패키지 설치 등)
+    cidr_blocks = ["0.0.0.0/0"] # WAS → RDS, 그리고 NAT 경유 외부 통신(패키지 설치 등)
   }
 
   tags = { Name = "${local.project}-WAS-SG" }
@@ -129,7 +129,7 @@ resource "aws_security_group" "rds" {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [aws_security_group.was.id]   # WAS SG를 단 리소스만 허용
+    security_groups = [aws_security_group.was.id] # WAS SG를 단 리소스만 허용
   }
 
   egress {
