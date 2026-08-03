@@ -15,7 +15,7 @@ locals {
             cidr = var.public_subnet_cidrs[index]
         }
     }
-    
+
     # 위에서 나오는 최종 결과
     # public_subnet_cidrs = {
     #     a = {
@@ -28,26 +28,25 @@ locals {
     #     }
     # }
 
-  public_subnets = {
-    a = "10.0.1.0/24"
-    c = "10.0.2.0/24"
-  }
+    # 가용영역이 변경되거나 추가/감소 되거나, CIDR 구성 변경시 자동으로 변경되도록 for 문을 활용하여 정의
+    app_subnets = {
+        for index,key in local.az_keys : key => {
+            az   = var.availability_zones[index]
+            cidr = var.app_subnet_cidrs[index]
+        }
+    }
 
-  app_subnets = {
-    a = "10.0.11.0/24"
-    c = "10.0.12.0/24"
-  }
+    db_subnets = {
+        for index,key in local.az_keys : key => {
+            az   = var.availability_zones[index]
+            cidr = var.db_subnet_cidrs[index]
+        }
+    }
 
-  db_subnets = {
-    a = "10.0.21.0/24"
-    c = "10.0.22.0/24"
-  }
-
-
-
-    common_tag = {
-    Project     = local.cluster_name
+    common_tags = {
+    Project     = var.project_name
     Environment = var.environment
     ManagedBy   = "terraform"
+    version     = "v2-eks-auto"
   }
 }
