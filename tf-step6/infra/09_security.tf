@@ -28,7 +28,7 @@ resource "aws_security_group" "rds" {
   }
 
 
-    tags = {
-      Name = "${local.cluster_name}-rds-sg"
-    }
+  tags = {
+    Name = "${local.cluster_name}-rds-sg"
+  }
 }
