@@ -6,7 +6,7 @@
 # EKS 정보
 # ─────────────────────────────────────────────
 output "aws_region" {
-  value = var.region
+  value = var.aws_region
 }
 
 output "cluster_name" {
@@ -29,7 +29,7 @@ output "auto_mode_node_role_arn" {
 # 로컬 PC -> kubectl CLI 이용 -> 쿠버네티스에 접속 -> API Server 통신 -> 관리/지시 .. 수행
 # 리전, 클러스터 정보 필요 -> 구성 업데이트 명령어
 output "kubeconfig_command" {
-  value = "aws eks update-kubeconfig --region ${var.region} --name ${aws_eks_cluster.main.name}"
+  value = "aws eks update-kubeconfig --region ${var.aws_region} --name ${aws_eks_cluster.main.name}"
 }
 
 # ─────────────────────────────────────────────

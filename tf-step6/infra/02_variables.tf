@@ -2,7 +2,7 @@
 # 테라폼에 사용될 공통 변수 정의
 ##########################################
 
-variable "region" {
+variable "aws_region" {
   default     = "us-east-1"
   description = "북부-버즈니아 리전"
   type        = string
