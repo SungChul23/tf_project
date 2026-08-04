@@ -97,7 +97,7 @@ resource "aws_eks_cluster" "main" {
     aws_iam_role_policy_attachment.eks_cluster,   # 클러스터 Role에 5개 정책 부착 완료
     aws_iam_role_policy_attachment.eks_auto_node, # 노드 Role에 정책 부착 완료
     aws_route_table_association.app,              # 노드가 들어갈 서브넷의 라우팅 준비 완료
-    aws_cloudwatch_log_group.eks                  # 로그를 받을 CloudWatch 그룹 준비 완료
+    aws_cloudwatch_log_group.eks_cluster_logs     # 로그를 받을 CloudWatch 그룹 준비 완료
   ]
 }
 
