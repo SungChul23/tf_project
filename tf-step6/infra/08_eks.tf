@@ -80,11 +80,11 @@ resource "aws_eks_cluster" "main" {
 
   # --- 컨트롤 플레인 로그를 CloudWatch로 전송 ---
   enabled_cluster_log_types = [
-    "api",                # API 서버에 들어온 요청 로그
-    "audit",               # 누가 언제 무슨 작업을 했는지 감사 로그
-    "authenticator",        # IAM 인증 처리 로그
-    "controllerManager",    # Deployment/ReplicaSet 등 컨트롤러의 상태 조정 로그
-    "scheduler"              # Pod가 어느 노드에 배치됐는지에 대한 로그
+    "api",               # API 서버에 들어온 요청 로그
+    "audit",             # 누가 언제 무슨 작업을 했는지 감사 로그
+    "authenticator",     # IAM 인증 처리 로그
+    "controllerManager", # Deployment/ReplicaSet 등 컨트롤러의 상태 조정 로그
+    "scheduler"          # Pod가 어느 노드에 배치됐는지에 대한 로그
   ]
 
   tags = {
@@ -96,8 +96,8 @@ resource "aws_eks_cluster" "main" {
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster,   # 클러스터 Role에 5개 정책 부착 완료
     aws_iam_role_policy_attachment.eks_auto_node, # 노드 Role에 정책 부착 완료
-    aws_route_table_association.app,               # 노드가 들어갈 서브넷의 라우팅 준비 완료
-    aws_cloudwatch_log_group.eks                    # 로그를 받을 CloudWatch 그룹 준비 완료
+    aws_route_table_association.app,              # 노드가 들어갈 서브넷의 라우팅 준비 완료
+    aws_cloudwatch_log_group.eks                  # 로그를 받을 CloudWatch 그룹 준비 완료
   ]
 }
 
@@ -106,7 +106,7 @@ resource "aws_eks_cluster" "main" {
 # (TODO) Metrics Server addon
 # → HPA가 CPU/메모리 사용량을 보고 Pod 개수를 조절하려면 필요한 컴포넌트
 # ────────────────────────────────────────────────
- resource "aws_eks_addon" "metrics_server" {
+resource "aws_eks_addon" "metrics_server" {
   cluster_name = aws_eks_cluster.main.name
   addon_name   = "metrics-server"
 
@@ -114,10 +114,10 @@ resource "aws_eks_cluster" "main" {
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
 
-    tags = {
+  tags = {
     Name = "${local.cluster_name}-metrics-server-addon"
   }
- }
+}
 
 
 # ────────────────────────────────────────────────
@@ -125,7 +125,7 @@ resource "aws_eks_cluster" "main" {
 # → bootstrap_cluster_creator_admin_permissions 로 받은 관리자 권한 외에
 #   다른 팀원 계정에도 접근 권한을 열어주려면 필요
 # ────────────────────────────────────────────────
- resource "aws_eks_access_entry" "admin" {
+resource "aws_eks_access_entry" "admin" {
   # (반복문) 등록된 사용자 수 만큼 EKS 클러스터 관리자에 등록
   for_each = var.additional_admin_role_arns
 
@@ -136,8 +136,8 @@ resource "aws_eks_cluster" "main" {
   principal_arn = each.value
 
   # 일반 IAM 사용자, 다른 일반 role에 부여
-  type = "STANDARD" 
- }
+  type = "STANDARD"
+}
 
 resource "aws_eks_access_policy_association" "admin" {
   # 대상자(role등) 반복 설정
@@ -159,5 +159,5 @@ resource "aws_eks_access_policy_association" "admin" {
   }
 
   # 의존성
-  depends_on = [ aws_eks_access_entry.admin ]
+  depends_on = [aws_eks_access_entry.admin]
 }

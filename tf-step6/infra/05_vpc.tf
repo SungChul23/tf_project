@@ -33,9 +33,9 @@ resource "aws_subnet" "public" {
   for_each = local.public_subnet
 
   vpc_id                  = aws_vpc.main.id
-  cidr_block               = each.value.cidr
-  availability_zone        = each.value.az
-  map_public_ip_on_launch  = true # 이 서브넷에서 뜨는 리소스는 퍼블릭 IP 자동 할당
+  cidr_block              = each.value.cidr
+  availability_zone       = each.value.az
+  map_public_ip_on_launch = true # 이 서브넷에서 뜨는 리소스는 퍼블릭 IP 자동 할당
 
   tags = {
     Name                     = "${local.cluster_name}-public-subnet-${each.key}"
@@ -49,9 +49,9 @@ resource "aws_subnet" "app" {
   for_each = local.app_subnets
 
   vpc_id                  = aws_vpc.main.id
-  cidr_block               = each.value.cidr
-  availability_zone        = each.value.az
-  map_public_ip_on_launch  = false # 퍼블릭 IP 없음 → 외부에서 직접 접근 불가
+  cidr_block              = each.value.cidr
+  availability_zone       = each.value.az
+  map_public_ip_on_launch = false # 퍼블릭 IP 없음 → 외부에서 직접 접근 불가
 
   tags = {
     Name                              = "${local.cluster_name}-app-private-${each.key}"
@@ -65,9 +65,9 @@ resource "aws_subnet" "db" {
   for_each = local.db_subnets
 
   vpc_id                  = aws_vpc.main.id
-  cidr_block               = each.value.cidr
-  availability_zone        = each.value.az
-  map_public_ip_on_launch  = false
+  cidr_block              = each.value.cidr
+  availability_zone       = each.value.az
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "${local.cluster_name}-db-private-${each.key}"

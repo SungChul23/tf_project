@@ -17,8 +17,8 @@ data "aws_iam_policy_document" "eks_cluster_assume" {
   statement {
     effect = "Allow"
     actions = [
-      "sts:AssumeRole",   # Role을 임시로 빌려 쓸 수 있는 권한
-      "sts:TagSession"    # 빌려 쓰는 세션에 태그를 붙일 수 있는 권한
+      "sts:AssumeRole", # Role을 임시로 빌려 쓸 수 있는 권한
+      "sts:TagSession"  # 빌려 쓰는 세션에 태그를 붙일 수 있는 권한
     ]
 
     principals {
