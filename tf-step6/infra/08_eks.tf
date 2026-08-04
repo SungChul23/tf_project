@@ -66,8 +66,8 @@ resource "aws_eks_cluster" "main" {
 
   # --- EKS가 사용할 VPC/네트워크 및 API 엔드포인트 접근 설정 ---
   vpc_config {
+    
     # 노드/Pod가 뜰 서브넷 = Private App 서브넷 전체(가용영역별로 모두)
-    # ⚠ 오타 주의: values(...) 가 맞음 (value 아님) — 그대로 두면 plan/apply 시 에러 남
     subnet_ids = values(aws_subnet.app)[*].id
 
     endpoint_private_access = true # VPC 내부(노드 등)에서 EKS API 엔드포인트 접근 허용
