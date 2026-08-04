@@ -105,8 +105,18 @@ resource "aws_eks_cluster" "main" {
 # → HPA가 CPU/메모리 사용량을 보고 Pod 개수를 조절하려면 필요한 컴포넌트
 # 아직 미구현
 # ────────────────────────────────────────────────
-# resource "aws_eks_addon" "metrics_server" {
-# }
+ resource "aws_eks_addon" "metrics_server" {
+  cluster_name = aws_eks_cluster.main.name
+  addon_name   = "metrics-server"
+
+  # 이미 설정한 경우 ? -> 오버라이트
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+    tags = {
+    Name = "${local.cluster_name}-metrics-server-addon"
+  }
+ }
 
 
 # ────────────────────────────────────────────────
