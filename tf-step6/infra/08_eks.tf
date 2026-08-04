@@ -51,7 +51,9 @@ resource "aws_eks_cluster" "main" {
     service_ipv4_cidr = "172.20.0.0/16"
 
     elastic_load_balancing {
-      enabled = true # Service(LoadBalancer 타입)/Ingress 생성 시 ALB/NLB 자동 연동
+      # Service(LoadBalancer 타입)/Ingress 생성 시 ALB/NLB 자동 연동
+      # Helm 미설치 시에도 AWS가 알아서 ALB/NLB를 만들어서 연결해줌
+      enabled = true
     }
   }
 
@@ -103,7 +105,6 @@ resource "aws_eks_cluster" "main" {
 # ────────────────────────────────────────────────
 # (TODO) Metrics Server addon
 # → HPA가 CPU/메모리 사용량을 보고 Pod 개수를 조절하려면 필요한 컴포넌트
-# 아직 미구현
 # ────────────────────────────────────────────────
  resource "aws_eks_addon" "metrics_server" {
   cluster_name = aws_eks_cluster.main.name
@@ -123,9 +124,40 @@ resource "aws_eks_cluster" "main" {
 # (TODO) 추가 IAM 사용자/Role에 클러스터 접근 권한 등록
 # → bootstrap_cluster_creator_admin_permissions 로 받은 관리자 권한 외에
 #   다른 팀원 계정에도 접근 권한을 열어주려면 필요
-# 아직 미구현
 # ────────────────────────────────────────────────
-# resource "aws_eks_access_entry" "admin" {
-# }
-# resource "aws_eks_access_policy_association" "admin" {
-# }
+ resource "aws_eks_access_entry" "admin" {
+  # (반복문) 등록된 사용자 수 만큼 EKS 클러스터 관리자에 등록
+  for_each = var.additional_admin_role_arns
+
+  # 대상 클러스터
+  cluster_name = aws_eks_cluster.main.name
+
+  # 대상 IAM Role ARN
+  principal_arn = each.value
+
+  # 일반 IAM 사용자, 다른 일반 role에 부여
+  type = "STANDARD" 
+ }
+
+resource "aws_eks_access_policy_association" "admin" {
+  # 대상자(role등) 반복 설정
+  for_each = var.additional_admin_role_arns
+
+  # 권한을 적용할 eks 클러스터
+  cluster_name = aws_eks_cluster.main.name
+
+  # 접근할 role arn
+  principal_arn = each.value
+
+  # 실제 관리자 정책 => AWS에서 사전에 확정한 정책 => arn 방식 표기
+  policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  # 접근 범위
+  access_scope {
+    # 특정 네임스페이스가 아닌 전체 클러스터에 영향을 미침(전체 권한 적용)
+    type = "cluster"
+  }
+
+  # 의존성
+  depends_on = [ aws_eks_access_entry.admin ]
+}
