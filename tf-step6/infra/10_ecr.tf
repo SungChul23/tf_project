@@ -55,8 +55,8 @@ resource "aws_ecr_repository" "was" {
 #위에서 생성한 저장소 한 묶은 구성
 locals {
   ecr_repos = {
-    web = aws_ecr_repository.web
-    was = aws_ecr_repository.was
+    web = aws_ecr_repository.web.name
+    was = aws_ecr_repository.was.name
   }
 }
 

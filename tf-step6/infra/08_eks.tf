@@ -34,7 +34,7 @@ resource "aws_eks_cluster" "main" {
 
     # 어떤 용도의 노드풀을 쓸지 지정
     node_pools = [
-      "gerneral-purpose", # 일반 워크로드용 (WEB, WAS 등 우리 앱 Pod가 뜨는 곳)
+      "general-purpose", # 일반 워크로드용 (WEB, WAS 등 우리 앱 Pod가 뜨는 곳)
       "system"            # 클러스터 운영에 필수적인 시스템 Pod 전용
     ]
 
